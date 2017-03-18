@@ -28,17 +28,17 @@ var localStore = window.localStorage;
 /* surveyQuestion Model (This time, written in "JSON" format to interface more cleanly with Mustache) */
 var surveyQuestions = [
 						/*0*/
-                       {
-                       "type": "mult1",
-                       "variableName": "snooze",
-                       "questionPrompt": "Are you able to take the survey now?",
-                       "minResponse": 0,
-                       "maxResponse": 1,
-                       "labels": [
-                                {"label": "No"},
-                                {"label": "Yes"}
-                                ],
-                       },
+//                       {
+//                       "type": "mult1",
+//                       "variableName": "snooze",
+//                       "questionPrompt": "Are you able to take the survey now?",
+//                       "minResponse": 0,
+//                       "maxResponse": 1,
+//                       "labels": [
+//                                {"label": "No"},
+//                                {"label": "Yes"}
+//                                ],
+//                       },
                        /*1*/ //Question 1: Participants label location. 
                        {
                        "type": "mult1",                       
@@ -112,7 +112,7 @@ var participantSetup = [
 // Making mustache templates
 //Here you declare global variables are well 
 var NUMSETUPQS = participantSetup.length;
-var SNOOZEQ = 0;
+//var SNOOZEQ = 0;
 var questionTmpl = "<p>{{{questionText}}}</p><ul>{{{buttons}}}</ul>";
 var questionTextTmpl = "{{questionPrompt}}";
 var buttonTmpl = "<li><button id='{{id}}' value='{{value}}'>{{label}}</button></li>";
@@ -277,12 +277,13 @@ renderQuestion: function(question_index) {
 
 renderLastPage: function(pageData, question_index) {
     $("#question").html(Mustache.render(lastPageTmpl, pageData));
-    if ( question_index == SNOOZEQ ) {
-        app.snoozeNotif();
-        localStore.snoozed = 1;
-        app.saveData();        
-    }
-    else if ( question_index == -1) {
+//    if ( question_index == SNOOZEQ ) {
+//        app.snoozeNotif();
+//        localStore.snoozed = 1;
+//        app.saveData();        
+//    }
+//    else 
+	if ( question_index == -1) {
     	app.saveDataLastPage();
     }
     else {
@@ -350,9 +351,9 @@ recordResponse: function(button, count, type) {
     //This is where you do the Question Logic
     if (count <= -1) {console.log(uniqueRecord);}
    	if (count == -1) {app.scheduleNotifs(); app.renderLastPage(lastPage[2], count);}
-    else if (count == SNOOZEQ && response == 0) {app.renderLastPage(lastPage[1], count);}
-    else if (count == 1 && response == 0) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(2);});} 
-    else if (count == 1) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(3);});} 
+//    else if (count == SNOOZEQ && response == 0) {app.renderLastPage(lastPage[1], count);}
+    else if (count == 0 && response == 0) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(2);});} 
+//    else if (count == 1) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(3);});} 
     else if (count < surveyQuestions.length-1) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(count+1);});}
     else {app.renderLastPage(lastPage[0], count);}
 },
@@ -371,15 +372,16 @@ init: function() {
         localStore.uniqueKey = uniqueKey;
         app.renderQuestion(0);
     }
-    localStore.snoozed = 0;
+//    localStore.snoozed = 0;
 },
     
 sampleParticipant: function() {
     var current_moment = new Date();
     var current_time = current_moment.getTime();
-    if ((current_time - localStore.pause_time) > 600000 || localStore.snoozed == 1) {
+//    if ((current_time - localStore.pause_time) > 600000 || localStore.snoozed == 1) {
+    if ((current_time - localStore.pause_time) > 600000) {
         uniqueKey = new Date().getTime();
-        localStore.snoozed = 0;
+//        localStore.snoozed = 0;
         app.renderQuestion(0);
     }
     else {
@@ -394,11 +396,10 @@ saveData:function() {
            data: localStore,
            crossDomain: true,
            success: function (result) {
-           var pid = localStore.participant_id, snoozed = localStore.snoozed, 
-           		uniqueKey = localStore.uniqueKey, pause_time = localStore.pause_time;
+			   var pid = localStore.participant_id, uniqueKey = localStore.uniqueKey, pause_time = localStore.pause_time; //snoozed = localStore.snoozed, 
            localStore.clear();
            localStore.participant_id = pid;
-           localStore.snoozed = snoozed;
+//           localStore.snoozed = snoozed;
            localStore.uniqueKey = uniqueKey;
            localStore.pause_time = pause_time;
            },
@@ -412,10 +413,10 @@ saveDataLastPage:function() {
            data: localStore,
            crossDomain: true,
            success: function (result) {	
-           		var pid = localStore.participant_id, snoozed = localStore.snoozed, uniqueKey = localStore.uniqueKey;
+			   var pid = localStore.participant_id, uniqueKey = localStore.uniqueKey; //, snoozed = localStore.snoozed
            		localStore.clear();
             	localStore.participant_id = pid;
-           		localStore.snoozed = snoozed;
+//           		localStore.snoozed = snoozed;
            		localStore.uniqueKey = uniqueKey;
            		$("#question").html("<h3>Your responses have been recorded. Thank you for completing this survey.</h3>");
            },
@@ -428,8 +429,8 @@ saveDataLastPage:function() {
 },
 scheduleNotifs:function() {
 	//cordova.plugins.backgroundMode.enable();
-   	var interval1, interval2, interval3, interval4, interval5, interval6, interval7
-   	var a, b, c, d, e, f, g;
+   	var interval1, interval2 //, interval3, interval4, interval5, interval6, interval7
+   	var a, b; //, c, d, e, f, g;
    	var date1, date2, date3, date4, date5, date6, date7;
    	var currentMaxHour, currentMaxMinutes, currentMinHour, currenMinMinutes, nextMinHour, nextMinMinutes;
    	var currentLag, dinnerLag, maxInterval;
@@ -484,39 +485,39 @@ scheduleNotifs:function() {
    			maxInterval = (((((parseInt(currentMaxHour) - parseInt(currentMinHour))*60) + parseInt(currentMaxMinutes) - parseInt(currenMinMinutes))*60)*1000);
    			interval1 = parseInt(currentLag) + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag)) + day*i;
    			interval2 = interval1 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval3 = interval2 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval4 = interval3 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval5 = interval4 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval6 = interval5 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
+//   			interval3 = interval2 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
+//   			interval4 = interval3 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
+//   			interval5 = interval4 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
+//   			interval6 = interval5 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
    			dinnerInterval = parseInt(currentLag) + parseInt(maxInterval) + day*i;
    			
    			a = 101+(parseInt(i)*100);
             b = 102+(parseInt(i)*100);
-            c = 103+(parseInt(i)*100);
-            d = 104+(parseInt(i)*100);
-            e = 105+(parseInt(i)*100);
-            f = 106+(parseInt(i)*100);
+//            c = 103+(parseInt(i)*100);
+//            d = 104+(parseInt(i)*100);
+//            e = 105+(parseInt(i)*100);
+//            f = 106+(parseInt(i)*100);
             
         	date1 = new Date(now + interval1);
         	date2 = new Date(now + interval2);
-        	date3 = new Date(now + interval3);
-        	date4 = new Date(now + interval4);
-        	date5 = new Date(now + interval5);
-        	date6 = new Date(now + interval6);
+//        	date3 = new Date(now + interval3);
+//        	date4 = new Date(now + interval4);
+//        	date5 = new Date(now + interval5);
+//        	date6 = new Date(now + interval6);
         	
         	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: a, at: date1, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
         	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: b, at: date2, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: c, at: date3, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: d, at: date4, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: e, at: date5, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: f, at: date6, text: 'Time for your next Diary Survey!', title: 'Diary Survey'}); 
+//        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: c, at: date3, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
+//       	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: d, at: date4, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
+//        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: e, at: date5, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
+//        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: f, at: date6, text: 'Time for your next Diary Survey!', title: 'Diary Survey'}); 
 
         	localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
         	localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
-        	localStore['notification_' + i + '_3'] = localStore.participant_id + "_" + c + "_" + date3;
-        	localStore['notification_' + i + '_4'] = localStore.participant_id + "_" + d + "_" + date4;
-        	localStore['notification_' + i + '_5'] = localStore.participant_id + "_" + e + "_" + date5;
-        	localStore['notification_' + i + '_6'] = localStore.participant_id + "_" + f + "_" + date6;
+//        	localStore['notification_' + i + '_3'] = localStore.participant_id + "_" + c + "_" + date3;
+//        	localStore['notification_' + i + '_4'] = localStore.participant_id + "_" + d + "_" + date4;
+//        	localStore['notification_' + i + '_5'] = localStore.participant_id + "_" + e + "_" + date5;
+//        	localStore['notification_' + i + '_6'] = localStore.participant_id + "_" + f + "_" + date6;
         	}
 },
 snoozeNotif:function() {
