@@ -427,8 +427,8 @@ scheduleNotifs:function() {
         cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: a, at: date1, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
         cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: b, at: date2, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
 
-        localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
-        localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
+        // localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
+        // localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
     }
 },     
 };
