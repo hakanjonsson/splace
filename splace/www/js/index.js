@@ -407,7 +407,7 @@ scheduleNotifs:function() {
    	var currentMaxHour, currentMaxMinutes, currentMinHour, currenMinMinutes, nextMinHour, nextMinMinutes;
    	var currentLag, dinnerLag, maxInterval;
    	var day = 86400000;
-   	var    = 21600000;
+   	var randomDiaryLag = 21600000;
 	  var midday =  ["15","00"];
 	  var morning = ["09","00"];
 	  var dateObject = new Date();
