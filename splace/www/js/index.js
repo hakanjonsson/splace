@@ -28,17 +28,6 @@ var localStore = window.localStorage;
 /* surveyQuestion Model (This time, written in "JSON" format to interface more cleanly with Mustache) */
 var surveyQuestions = [
 						/*0*/
-                       {
-                       "type": "mult1",
-                       "variableName": "snooze",
-                       "questionPrompt": "Are you able to take the survey now?",
-                       "minResponse": 0,
-                       "maxResponse": 1,
-                       "labels": [
-                                {"label": "No"},
-                                {"label": "Yes"}
-                                ],
-                       },
                        /*1*/ //Question 1: Participants label location. 
                        {
                        "type": "mult1",                       
@@ -112,7 +101,6 @@ var participantSetup = [
 // Making mustache templates
 //Here you declare global variables are well 
 var NUMSETUPQS = participantSetup.length;
-var SNOOZEQ = 0;
 var questionTmpl = "<p>{{{questionText}}}</p><ul>{{{buttons}}}</ul>";
 var questionTextTmpl = "{{questionPrompt}}";
 var buttonTmpl = "<li><button id='{{id}}' value='{{value}}'>{{label}}</button></li>";
@@ -272,12 +260,7 @@ renderQuestion: function(question_index) {
 
 renderLastPage: function(pageData, question_index) {
     $("#question").html(Mustache.render(lastPageTmpl, pageData));
-    if ( question_index == SNOOZEQ ) {
-        app.snoozeNotif();
-        localStore.snoozed = 1;
-        app.saveData();        
-    }
-    else if ( question_index == -1) {
+    if ( question_index == -1) {
     	app.saveDataLastPage();
     }
     else {
@@ -345,9 +328,8 @@ recordResponse: function(button, count, type) {
     //This is where you do the Question Logic
     if (count <= -1) {console.log(uniqueRecord);}
    	if (count == -1) {app.scheduleNotifs(); app.renderLastPage(lastPage[2], count);}
-    else if (count == SNOOZEQ && response == 0) {app.renderLastPage(lastPage[1], count);}
-    else if (count == 1 && response == 0) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(2);});} 
-    else if (count == 1) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(3);});} 
+    else if (count == 0 && response == 0) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(1);});} 
+    else if (count == 0) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(2);});} 
     else if (count < surveyQuestions.length-1) {$("#question").fadeOut(400, function () {$("#question").html("");app.renderQuestion(count+1);});}
     else {app.renderLastPage(lastPage[0], count);}
 },
@@ -366,15 +348,13 @@ init: function() {
         localStore.uniqueKey = uniqueKey;
         app.renderQuestion(0);
     }
-    localStore.snoozed = 0;
 },
     
 sampleParticipant: function() {
     var current_moment = new Date();
     var current_time = current_moment.getTime();
-    if ((current_time - localStore.pause_time) > 600000 || localStore.snoozed == 1) {
+    if ((current_time - localStore.pause_time) > 600000) {
         uniqueKey = new Date().getTime();
-        localStore.snoozed = 0;
         app.renderQuestion(0);
     }
     else {
@@ -389,11 +369,10 @@ saveData:function() {
            data: localStore,
            crossDomain: true,
            success: function (result) {
-           var pid = localStore.participant_id, snoozed = localStore.snoozed, 
+           var pid = localStore.participant_id, 
            		uniqueKey = localStore.uniqueKey, pause_time = localStore.pause_time;
            localStore.clear();
            localStore.participant_id = pid;
-           localStore.snoozed = snoozed;
            localStore.uniqueKey = uniqueKey;
            localStore.pause_time = pause_time;
            },
@@ -407,10 +386,9 @@ saveDataLastPage:function() {
            data: localStore,
            crossDomain: true,
            success: function (result) {	
-           		var pid = localStore.participant_id, snoozed = localStore.snoozed, uniqueKey = localStore.uniqueKey;
+           		var pid = localStore.participant_id, uniqueKey = localStore.uniqueKey;
            		localStore.clear();
             	localStore.participant_id = pid;
-           		localStore.snoozed = snoozed;
            		localStore.uniqueKey = uniqueKey;
            		$("#question").html("<h3>Your responses have been recorded. Thank you for completing this survey.</h3>");
            },
@@ -513,17 +491,5 @@ scheduleNotifs:function() {
         	localStore['notification_' + i + '_5'] = localStore.participant_id + "_" + e + "_" + date5;
         	localStore['notification_' + i + '_6'] = localStore.participant_id + "_" + f + "_" + date6;
         	}
-},
-snoozeNotif:function() {
-    var now = new Date().getTime(), snoozeDate = new Date(now + 600*1000);
-    var id = '99';
-    cordova.plugins.notification.local.schedule({
-                                         icon: 'ic_launcher',
-                                         id: id,
-                                         title: 'Diary Survey',
-                                         text: 'Please complete survey now!',
-                                         at: snoozeDate,
-                                         });
-  //console.log(snoozeDate);                                       
 },     
 };
