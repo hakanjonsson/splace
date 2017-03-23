@@ -401,95 +401,34 @@ saveDataLastPage:function() {
 },
 scheduleNotifs:function() {
 	//cordova.plugins.backgroundMode.enable();
-   	var interval1, interval2, interval3, interval4, interval5, interval6, interval7
-   	var a, b, c, d, e, f, g;
-   	var date1, date2, date3, date4, date5, date6, date7;
+   	var interval1, interval2;
+   	var a, b;
+   	var date1, date2;
    	var currentMaxHour, currentMaxMinutes, currentMinHour, currenMinMinutes, nextMinHour, nextMinMinutes;
    	var currentLag, dinnerLag, maxInterval;
    	var day = 86400000;
-   	var minDiaryLag = 5400000;
-   	var randomDiaryLag = 1800000;
-	var weekendDinnerTime =  ["19","00"];
-	var weekendWakeTime = ["09","00"];
-	var weekdayDinnerTime = ["19","00"];
-	var weekdayWakeTime = ["09","00"];
-	var dateObject = new Date();
+   	var    = 21600000;
+	  var midday =  ["15","00"];
+	  var morning = ["09","00"];
+	  var dateObject = new Date();
     var now = dateObject.getTime(); 
     var dayOfWeek = dateObject.getDay(), currentHour = dateObject.getHours(), currentMinute = dateObject.getMinutes();
-   	for (i = 0; i < 7; i ++) {
-   		var alarmDay = dayOfWeek + 1 + i; 
-   			if (alarmDay > 6) {alarmDay = alarmDay - 7;}
-   			if (alarmDay == 0 || alarmDay == 6) {
-   				currentMaxHour = weekendDinnerTime[0];
-   				currentMaxMinutes = weekendDinnerTime[1];
-   				currentMinHour = weekendWakeTime[0];
-   				currenMinMinutes = weekendWakeTime[1];
-   				if (alarmDay == 0) {
-   					nextMinHour = weekdayWakeTime[0];
-   					nextMinMinutes = weekdayWakeTime[1];
-   				}
-   				else {
-   					nextMinHour = weekendWakeTime[0];
-   					nextMinMinutes = weekendWakeTime[1];
-   				}
-   				currentLag = (((((24 - parseInt(currentHour) + parseInt(weekendWakeTime[0]))*60) - parseInt(currentMinute) + parseInt(weekendWakeTime[1]))*60)*1000);
-				
-   			}
-   			else {
-   				currentMaxHour = weekdayDinnerTime[0];
-   				currentMaxMinutes = weekdayDinnerTime[1];
-   				currentMinHour = weekdayWakeTime[0];
-   				currenMinMinutes = weekdayWakeTime[1];   				
-   				if (alarmDay == 5) {
-   					nextMinHour = weekendWakeTime[0];
-   					nextMinMinutes = weekendWakeTime[1];
-   				}
-   				else {
-   					nextMinHour = weekdayWakeTime[0];
-   					nextMinMinutes = weekdayWakeTime[1];   				
-   				}
-                currentLag = (((((24 - parseInt(currentHour) + parseInt(weekdayWakeTime[0]))*60) - parseInt(currentMinute) + parseInt(weekdayWakeTime[1]))*60)*1000);
-   			}
-   			if (alarmDay == 5 || alarmDay == 0) {nightlyLag = currentLag;}
-   			else {
-            	nightlyLag= (((((24 - parseInt(currentHour) + parseInt(nextMinHour))*60) - parseInt(currentMinute) + parseInt(nextMinMinutes))*60)*1000);
-   			}
-   			maxInterval = (((((parseInt(currentMaxHour) - parseInt(currentMinHour))*60) + parseInt(currentMaxMinutes) - parseInt(currenMinMinutes))*60)*1000);
-   			interval1 = parseInt(currentLag) + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag)) + day*i;
-   			interval2 = interval1 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval3 = interval2 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval4 = interval3 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval5 = interval4 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			interval6 = interval5 + (parseInt(Math.round(Math.random()*randomDiaryLag)+minDiaryLag));
-   			dinnerInterval = parseInt(currentLag) + parseInt(maxInterval) + day*i;
+   	for (i = 0; i < 60; i ++) {
+        currentLag = (((((24 - parseInt(currentHour) + parseInt(morning[0]))*60) - parseInt(currentMinute) + parseInt(morning[1]))*60)*1000);
+   			interval1 = parseInt(currentLag) + (parseInt(Math.round(Math.random()*randomDiaryLag))) + day*i;
+   			interval2 = parseInt(currentLag) + randomDiaryLag + (parseInt(Math.round(Math.random()*randomDiaryLag))) + day*i;
    			
    			a = 101+(parseInt(i)*100);
-            b = 102+(parseInt(i)*100);
-            c = 103+(parseInt(i)*100);
-            d = 104+(parseInt(i)*100);
-            e = 105+(parseInt(i)*100);
-            f = 106+(parseInt(i)*100);
+        b = 102+(parseInt(i)*100);
             
-        	date1 = new Date(now + interval1);
-        	date2 = new Date(now + interval2);
-        	date3 = new Date(now + interval3);
-        	date4 = new Date(now + interval4);
-        	date5 = new Date(now + interval5);
-        	date6 = new Date(now + interval6);
+        date1 = new Date(now + interval1);
+        date2 = new Date(now + interval2);
         	
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: a, at: date1, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: b, at: date2, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: c, at: date3, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: d, at: date4, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: e, at: date5, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
-        	cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: f, at: date6, text: 'Time for your next Diary Survey!', title: 'Diary Survey'}); 
+        cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: a, at: date1, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
+        cordova.plugins.notification.local.schedule({icon: 'ic_launcher', id: b, at: date2, text: 'Time for your next Diary Survey!', title: 'Diary Survey'});
 
-        	localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
-        	localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
-        	localStore['notification_' + i + '_3'] = localStore.participant_id + "_" + c + "_" + date3;
-        	localStore['notification_' + i + '_4'] = localStore.participant_id + "_" + d + "_" + date4;
-        	localStore['notification_' + i + '_5'] = localStore.participant_id + "_" + e + "_" + date5;
-        	localStore['notification_' + i + '_6'] = localStore.participant_id + "_" + f + "_" + date6;
-        	}
+        localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
+        localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
+    }
 },     
 };
