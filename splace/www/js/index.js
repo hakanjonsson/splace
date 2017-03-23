@@ -231,12 +231,7 @@ renderQuestion: function(question_index) {
         	 question.buttons = Mustache.render(textTmpl, {id: question.variableName+"1"});
         	$("#question").html(Mustache.render(questionTmpl, question)).fadeIn(400);
         	$("#question ul li button").click(function(){
-				if (app.validateResponse($("textarea"))){
         		 	app.recordResponse($("textarea"), question_index, question.type);
-                } 
-                else {
-                    alert("Please enter something.");
-                }
             });
             break;
         case 'datePicker':
@@ -531,13 +526,4 @@ snoozeNotif:function() {
                                          });
   //console.log(snoozeDate);                                       
 },     
-validateResponse: function(data){
-        var text = data.val();
-//         console.log(text);
-        if (text === ""){
-        	return false;
-        } else { 
-        	return true;
-        }
-    },      
 };
