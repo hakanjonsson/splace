@@ -353,7 +353,7 @@ init: function() {
 sampleParticipant: function() {
     var current_moment = new Date();
     var current_time = current_moment.getTime();
-    if ((current_time - localStore.pause_time) > 600000) {
+    if ((current_time - localStore.pause_time) > 100000) {
         uniqueKey = new Date().getTime();
         app.renderQuestion(0);
     }
@@ -407,13 +407,13 @@ scheduleNotifs:function() {
    	var currentMaxHour, currentMaxMinutes, currentMinHour, currenMinMinutes, nextMinHour, nextMinMinutes;
    	var currentLag, dinnerLag, maxInterval;
    	var day = 86400000;
-   	var randomDiaryLag = 21600000;
+   	var randomDiaryLag = 21600000; // half a day, 6 hours
 	  var midday =  ["15","00"];
 	  var morning = ["09","00"];
 	  var dateObject = new Date();
     var now = dateObject.getTime(); 
     var dayOfWeek = dateObject.getDay(), currentHour = dateObject.getHours(), currentMinute = dateObject.getMinutes();
-   	for (i = 0; i < 60; i ++) {
+   	for (i = 0; i < 45; i ++) {
         currentLag = (((((24 - parseInt(currentHour) + parseInt(morning[0]))*60) - parseInt(currentMinute) + parseInt(morning[1]))*60)*1000);
    			interval1 = parseInt(currentLag) + (parseInt(Math.round(Math.random()*randomDiaryLag))) + day*i;
    			interval2 = parseInt(currentLag) + randomDiaryLag + (parseInt(Math.round(Math.random()*randomDiaryLag))) + day*i;
@@ -429,6 +429,11 @@ scheduleNotifs:function() {
 
         // localStore['notification_' + i + '_1'] = localStore.participant_id + "_" + a + "_" + date1;
         // localStore['notification_' + i + '_2'] = localStore.participant_id + "_" + b + "_" + date2;
+        if (i == 0) {
+          localStore['notification_1'] = a + "_" + date1;
+          localStore['notification_2'] = b + "_" + date2;
+        }
+
     }
 },     
 };
